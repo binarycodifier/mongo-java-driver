@@ -34,7 +34,9 @@ public class DBRefTest extends TestCase {
         try {
 	    cleanupMongo = new Mongo( "127.0.0.1" );
 	    cleanupDB = "com_monogodb_unittest_DBRefTest";
+        cleanupOtherDB = "com_monogodb_unittest_DBRefTest_other";
 	    _db = cleanupMongo.getDB( cleanupDB );
+        _dbOther = cleanupMongo.getDB( cleanupOtherDB );
         }
         catch(UnknownHostException e) {
             throw new MongoException("couldn't connect");
@@ -52,17 +54,46 @@ public class DBRefTest extends TestCase {
     }
 
     @Test(groups = {"basic"})
+    public void testNotEqualsAndHashCodeForDifferentDatabases() {
+        DBRef ref = new DBRef(_db, "foo.bar", 4);
+        DBRef other = new DBRef(_dbOther, "foo.bar", 4);
+        assertEquals(ref, ref);
+        assertEquals(other, other);
+        assertNotEquals(ref, other);
+        assertNotEquals(other, new DBRefBase(_db, "foo.bar", 4));
+        assertNotEquals(ref.hashCode(), other.hashCode());
+    }
+
+    @Test(groups = {"basic"})
     public void testDBRefBaseToString(){
 
         ObjectId id = new ObjectId("123456789012345678901234");
         DBRefBase ref = new DBRefBase(_db, "foo.bar", id);
 
-        assertEquals("{ \"$ref\" : \"foo.bar\", \"$id\" : \"123456789012345678901234\" }", ref.toString());
+        assertEquals("{ \"$ref\" : \"foo.bar\", \"$id\" : \"123456789012345678901234\", \"$db\" : \"com_monogodb_unittest_DBRefTest\" }", ref.toString());
     }
 
     @Test(groups = {"basic"})
     public void testDBRef(){
 
+        DBRef ref = new DBRef(_db, "hello", "world");
+        DBObject o = new BasicDBObject("!", ref);
+
+        DBEncoder encoder = DefaultDBEncoder.FACTORY.create();
+        OutputBuffer buf = new BasicOutputBuffer();
+
+        encoder.writeObject(buf, o);
+
+        DefaultDBCallback cb = new DefaultDBCallback( _db.getCollection("foo.bar") );
+        BSONDecoder decoder = new BasicBSONDecoder();
+        decoder.decode( buf.toByteArray() , cb );
+        DBObject read = cb.dbget();
+
+        assertEquals("{\"!\":{\"$ref\":\"hello\",\"$id\":\"world\",\"$db\":\"com_monogodb_unittest_DBRefTest\"}}", read.toString().replaceAll(" +", ""));
+    }
+
+    @Test(groups = {"basic"})
+    public void testDBRefWithNullDBCallbackState(){
         DBRef ref = new DBRef(_db, "hello", "world");
         DBObject o = new BasicDBObject("!", ref);
 
@@ -159,6 +190,7 @@ public class DBRefTest extends TestCase {
     }
 
     DB _db;
+    DB _dbOther;
 
     public static void main( String args[] ) {
         (new DBRefTest()).runConsole();

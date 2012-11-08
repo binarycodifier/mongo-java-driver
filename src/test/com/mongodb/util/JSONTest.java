@@ -349,7 +349,7 @@ public class JSONTest extends com.mongodb.util.TestCase {
 
     @org.testng.annotations.Test
     public void testJSONEncoding() throws ParseException {
-        String json = "{ 'str' : 'asdfasd' , 'long' : 123123123123 , 'int' : 5 , 'float' : 0.4 , 'bool' : false , 'date' : { '$date' : '2011-05-18T18:56:00Z'} , 'pat' : { '$regex' : '.*' , '$options' : ''} , 'oid' : { '$oid' : '4d83ab3ea39562db9c1ae2ae'} , 'ref' : { '$ref' : 'test.test' , '$id' : { '$oid' : '4d83ab59a39562db9c1ae2af'}} , 'code' : { '$code' : 'asdfdsa'} , 'codews' : { '$code' : 'ggggg' , '$scope' : { }} , 'ts' : { '$ts' : 1300474885 , '$inc' : 10} , 'null' :  null, 'uuid' : { '$uuid' : '60f65152-6d4a-4f11-9c9b-590b575da7b5' }}";
+        String json = "{ 'str' : 'asdfasd' , 'long' : 123123123123 , 'int' : 5 , 'float' : 0.4 , 'bool' : false , 'date' : { '$date' : '2011-05-18T18:56:00Z'} , 'pat' : { '$regex' : '.*' , '$options' : ''} , 'oid' : { '$oid' : '4d83ab3ea39562db9c1ae2ae'} , 'ref' : { '$ref' : 'test.test' , '$id' : { '$oid' : '4d83ab59a39562db9c1ae2af'}, '$db' : 'test_db'} , 'code' : { '$code' : 'asdfdsa'} , 'codews' : { '$code' : 'ggggg' , '$scope' : { }} , 'ts' : { '$ts' : 1300474885 , '$inc' : 10} , 'null' :  null, 'uuid' : { '$uuid' : '60f65152-6d4a-4f11-9c9b-590b575da7b5' }}";
         BasicDBObject a = (BasicDBObject) JSON.parse(json);
         assert (a.get("str").equals("asdfasd"));
         assert (a.get("int").equals(5));
@@ -367,6 +367,7 @@ public class JSONTest extends com.mongodb.util.TestCase {
         ObjectId oid = (ObjectId) a.get("oid");
         assert (oid.equals(new ObjectId("4d83ab3ea39562db9c1ae2ae")));
         DBRef ref = (DBRef) a.get("ref");
+        assertEquals("test_db", ref.getDB().getName(), "should be proxy reference name for the database.");
         assert (ref.equals(new DBRef(null, "test.test", new ObjectId("4d83ab59a39562db9c1ae2af"))));
         assert (a.get("code").equals(new Code("asdfdsa")));
         assert (a.get("codews").equals(new CodeWScope("ggggg", new BasicBSONObject())));

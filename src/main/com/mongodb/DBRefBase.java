@@ -57,7 +57,7 @@ public class DBRefBase {
 
     @Override
     public String toString(){
-        return "{ \"$ref\" : \"" + _ns + "\", \"$id\" : \"" + _id + "\" }";
+        return "{ \"$ref\" : \"" + _ns + "\", \"$id\" : \"" + _id + "\", \"$db\" : \"" + _db + "\" }";
     }
 
     /**
@@ -93,6 +93,7 @@ public class DBRefBase {
 
         if (_id != null ? !_id.equals(dbRefBase._id) : dbRefBase._id != null) return false;
         if (_ns != null ? !_ns.equals(dbRefBase._ns) : dbRefBase._ns != null) return false;
+        if (_db != null ? !_db.equals(dbRefBase._db) : dbRefBase._db != null) return false;
 
         return true;
     }
@@ -101,6 +102,7 @@ public class DBRefBase {
     public int hashCode() {
         int result = _id != null ? _id.hashCode() : 0;
         result = 31 * result + (_ns != null ? _ns.hashCode() : 0);
+        result = (_db != null) ? 31 * result + _db.hashCode() : result;
         return result;
     }
 

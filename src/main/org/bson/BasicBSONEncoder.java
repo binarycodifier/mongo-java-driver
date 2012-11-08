@@ -257,6 +257,11 @@ public class BasicBSONEncoder implements BSONEncoder {
             BSONObject temp = new BasicBSONObject();
             temp.put("$ref", ((DBRefBase)val).getRef());
             temp.put("$id", ((DBRefBase)val).getId());
+
+            if(((DBRefBase)val).getDB() != null) {
+                temp.put("$db", ((DBRefBase)val).getDB().toString());
+            }
+
             putObject( name, temp );
         }
         else if ( val instanceof MinKey )

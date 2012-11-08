@@ -69,6 +69,10 @@ public class DefaultDBEncoder extends BasicBSONEncoder implements DBEncoder {
         _putObjectField( "$ref" , ref.getRef() );
         _putObjectField( "$id" , ref.getId() );
 
+        if(ref.getDB() != null) {
+            _putObjectField( "$db" , ref.getDB().toString() );
+        }
+
         _buf.write( EOO );
         _buf.writeInt( sizePos , _buf.getPosition() - sizePos );
     }

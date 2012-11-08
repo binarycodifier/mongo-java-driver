@@ -26,6 +26,7 @@ import java.util.SimpleTimeZone;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import com.mongodb.*;
 import org.bson.BSON;
 import org.bson.BSONObject;
 import org.bson.BasicBSONCallback;
@@ -35,11 +36,6 @@ import org.bson.types.CodeWScope;
 import org.bson.types.MaxKey;
 import org.bson.types.MinKey;
 import org.bson.types.ObjectId;
-
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import com.mongodb.DBRef;
 
 public class JSONCallback extends BasicBSONCallback {
     
@@ -122,7 +118,7 @@ public class JSONCallback extends BasicBSONCallback {
 		    setRoot(o);
 		}
 	    } else if ( b.containsField( "$ref" ) ) {
-                o = new DBRef(null, (String)b.get("$ref"), b.get("$id"));
+                o = new DBRef(( (b.get("$db") != null) ? new DBProxy(null, (String)b.get("$db")) : null ), (String)b.get("$ref"), b.get("$id"));
 		if (!isStackEmpty()) {
 		    cur().put( name, o );
 		} else {

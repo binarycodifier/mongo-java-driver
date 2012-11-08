@@ -60,7 +60,7 @@ public abstract class DB {
     public DB( Mongo mongo , String name ){
         _mongo = mongo;
     	_name = name;
-        _options = new Bytes.OptionHolder( _mongo._netOptions );
+        _options = (_mongo == null) ? null : new Bytes.OptionHolder( _mongo._netOptions );
     }
 
     /**

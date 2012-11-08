@@ -69,6 +69,13 @@ public class DefaultDBCallback extends BasicBSONCallback implements DBCallback {
         if ( ! ( o instanceof List ) &&
              o.containsField( "$ref" ) &&
              o.containsField( "$id" ) ){
+
+            if(_db != null && o.containsField("$db")) {
+                //get the real database for this reference (when using multiple databases)
+                DB actualDB = _db.getMongo().getDB((String)o.get("$db"));
+                return cur().put( _lastName , new DBRef( actualDB, o ) );
+            }
+
             return cur().put( _lastName , new DBRef( _db, o ) );
         }
 

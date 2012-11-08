@@ -135,6 +135,7 @@ public class TestCase extends MyAsserts {
     }
 
     public String cleanupDB = null;
+    public String cleanupOtherDB = null;
     public Mongo cleanupMongo = null;
 
     @org.testng.annotations.AfterClass
@@ -142,6 +143,9 @@ public class TestCase extends MyAsserts {
         if (cleanupMongo != null) {
             if (cleanupDB != null) {
                 cleanupMongo.dropDatabase(cleanupDB);
+            }
+            if (cleanupOtherDB != null) {
+                cleanupMongo.dropDatabase(cleanupOtherDB);
             }
             cleanupMongo.close();
         }

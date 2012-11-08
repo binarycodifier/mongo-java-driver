@@ -182,6 +182,11 @@ public class DBApiLayer extends DB {
         _connector.say( this , om ,com.mongodb.WriteConcern.NONE , addr );
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
+
     class MyCollection extends DBCollection {
         MyCollection( String name ){
             super( DBApiLayer.this , name );
